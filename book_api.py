@@ -15,10 +15,10 @@ US_STATES = [
     "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK",
     "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI",
     "WV", "WY",
-    # https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States#Federal_district.
-    "DC",
-    # https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States#Inhabited_territories.
-    "AS", "GU", "MP", "PR", "VI",
+    # # https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States#Federal_district.
+    # "DC",
+    # # https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States#Inhabited_territories.
+    # "AS", "GU", "MP", "PR", "VI",
 ]
 
 app = Flask(__name__)
@@ -84,7 +84,7 @@ def add_user():
     resp = make_response(param)
     resp.headers["Location"] = request.base_url + "/" + str(param["id"])
 
-    return resp
+    return resp, 201
 
 
 @app.route("/customers/<id>", methods=["GET"])
@@ -137,7 +137,7 @@ def user_input_valid(param):
 
 def is_email(email):
     try:
-        v = validate_email(email)
+        v = validate_email(email, check_deliverability=False)
     except:
         return False
     return True
