@@ -65,6 +65,7 @@ def create_users_table():
 def insert_book(param):
     try:
         mydb.start_transaction()
+        print("got transaction for books")
         check_sql = "SELECT * FROM books WHERE ISBN=%s"
         mycursor.execute(check_sql,[param["ISBN"]])
 
@@ -90,6 +91,7 @@ def insert_book(param):
 def insert_user(param):
     try:
         mydb.start_transaction()
+        print("got transaction for users")
         check_sql = "SELECT * FROM users WHERE userId=%s"
         mycursor.execute(check_sql,[param["userId"]])
 

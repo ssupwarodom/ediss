@@ -34,7 +34,7 @@ def add_book():
     param = request.get_json()
     if not book_input_valid(param):
         abort(400)
-    
+    print("starting books transaction")
     add_book_success = book_mysql.insert_book(param)
     if not add_book_success:
         return {"message": "This ISBN already exists in the system."}, 422
@@ -73,6 +73,7 @@ def add_user():
     if not user_input_valid(param):
         abort(400)
 
+    print("starting users transaction")
     id = book_mysql.insert_user(param)
     if not id:
         return {"message": "This user ID already exists in the system."}, 422
