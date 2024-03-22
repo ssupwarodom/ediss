@@ -36,6 +36,12 @@ def add_book():
         abort(400)
     print("starting books transaction")
     add_book_success = book_mysql.insert_book(param)
+    counter = 0
+    while not add_book_success:
+        add_book_success = book_mysql.insert_book(param)
+        if counter == 3:
+            break
+        counter += 1
     if not add_book_success:
         return {"message": "This ISBN already exists in the system."}, 422
     
