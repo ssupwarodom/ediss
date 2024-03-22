@@ -81,8 +81,9 @@ def insert_book(param):
         else:
             mydb.rollback()
             return False
-    except:
+    except Exception as e:
         mydb.rollback()
+        print(e)
         return False
     
     return True
@@ -110,8 +111,9 @@ def insert_user(param):
         else:
             mydb.rollback()
             return False
-    except:
+    except Exception as e:
         mydb.rollback()
+        print(e)
         return False
     
 
