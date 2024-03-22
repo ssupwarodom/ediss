@@ -69,6 +69,7 @@ def insert_book(param):
         mycursor.execute(check_sql,[param["ISBN"]])
 
         result = mycursor.fetchall()
+        print(result)
         if not bool(result):
             sql = "INSERT INTO books (ISBN, title, Author, description, genre, price, quantity)"\
                         "VALUES (%s, %s, %s, %s, %s, %s, %s)"
