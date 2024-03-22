@@ -128,7 +128,7 @@ def user_input_valid(param):
         if field not in param:
             return False
     
-    if (param["state"] not in US_STATES and 
+    if (param["state"] not in US_STATES or 
             not is_email(param["userId"])):
         return False
     
