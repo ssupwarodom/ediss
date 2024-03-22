@@ -39,10 +39,9 @@ def add_book():
     if not book_input_valid(param):
         abort(400)
     
-    if isbn_exist(param["ISBN"]):
+    add_book_success = book_mysql.insert_book(param)
+    if not add_book_success:
         return {"message": "This ISBN already exists in the system."}, 422
-    
-    book_mysql.insert_book(param)
     
     resp = make_response(param)
     resp.headers["Location"] = request.base_url + "/" + param["ISBN"]
@@ -77,10 +76,12 @@ def add_user():
     param = request.get_json()
     if not user_input_valid(param):
         abort(400)
-    if user_exist(param["userId"]):
+
+    id = book_mysql.insert_user(param)
+    if not id:
         return {"message": "This user ID already exists in the system."}, 422
     
-    param["id"] = book_mysql.insert_user(param)
+    param["id"] = id
     resp = make_response(param)
     resp.headers["Location"] = request.base_url + "/" + str(param["id"])
 

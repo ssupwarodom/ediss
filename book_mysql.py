@@ -12,11 +12,10 @@ mydb = mysql.connector.connect(
     password=MYSQL_PASSWD,
 )
 
-
+mycursor = mydb.cursor()
 
 
 def init_sequence():
-    mycursor = mydb.cursor()
     mycursor.execute("CREATE DATABASE IF NOT EXISTS ediss")
     mycursor.execute("USE ediss")
     mycursor.execute("SHOW TABLES")
@@ -29,13 +28,10 @@ def init_sequence():
     if "users" not in tables:
         print("Creating new users table...")
         create_users_table()
-
-    mycursor.close()
     
 
 
 def cleanup():
-    mycursor = mydb.cursor()
     mycursor.execute("SHOW TABLES")
     tables = [t[0] for t in mycursor.fetchall()]
 
@@ -46,52 +42,73 @@ def cleanup():
     if "users" in tables:
         print("Dropping existing users table..")
         mycursor.execute("DROP TABLE users")
-    mycursor.close()
 
 
 def create_books_table():
-    mycursor = mydb.cursor()
     mycursor.execute("CREATE TABLE books (ISBN VARCHAR(255) PRIMARY KEY, title VARCHAR(255),"
                                      " Author VARCHAR(255), description VARCHAR(255), genre VARCHAR(255),"
                                      " price FLOAT(2), quantity INT)")
-    mycursor.close()
+
     
 
 def create_users_table():
-    mycursor = mydb.cursor()
     mycursor.execute(
         "CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, userId VARCHAR(255),"
         " name VARCHAR(255), phone VARCHAR(255), address VARCHAR(255),"
         " address2 VARCHAR(255), city VARCHAR(255), state VARCHAR(255),"
         " zipcode VARCHAR(255))")
-    mycursor.close()
 
 
 def insert_book(param):
-    mycursor = mydb.cursor()
-    sql = "INSERT INTO books (ISBN, title, Author, description, genre, price, quantity)"\
-                "VALUES (%s, %s, %s, %s, %s, %s, %s)"
-    val = (param["ISBN"], param["title"], param["Author"], 
-            param["description"], param["genre"], param["price"], param["quantity"])
-    mycursor.execute(sql,val)
+    try:
+        mydb.start_transaction()
+        check_sql = "SELECT * FROM books WHERE ISBN=%s"
+        mycursor.execute(check_sql,[param["ISBN"]])
 
-
-    mydb.commit()
-    mycursor.close()
+        result = mycursor.fetchall()
+        if not bool(result):
+            sql = "INSERT INTO books (ISBN, title, Author, description, genre, price, quantity)"\
+                        "VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            val = (param["ISBN"], param["title"], param["Author"], 
+                    param["description"], param["genre"], param["price"], param["quantity"])
+            mycursor.execute(sql,val)
+            mydb.commit()
+        else:
+            mydb.rollback()
+            return False
+    except:
+        mydb.rollback()
+        return False
+    
+    return True
 
 
 def insert_user(param):
-    mycursor = mydb.cursor()
-    sql = "INSERT INTO users (userId, name, phone, address, address2, "\
-            "city, state, zipcode) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-    val = (param["userId"], param["name"], param["phone"], 
-                param["address"], param["address2"], param["city"],
-                param["state"], param["zipcode"])
-    mycursor.execute(sql,val)
-    mydb.commit()
-    id = mycursor.lastrowid
-    mycursor.close()
-    return id
+    try:
+        mydb.start_transaction()
+        check_sql = "SELECT * FROM users WHERE userId=%s"
+        mycursor.execute(check_sql,[param["userId"]])
+
+        result = mycursor.fetchall()
+        print(result)
+        if not bool(result):
+            sql = "INSERT INTO users (userId, name, phone, address, address2, "\
+                    "city, state, zipcode) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (param["userId"], param["name"], param["phone"], 
+                        param["address"], param["address2"], param["city"],
+                        param["state"], param["zipcode"])
+            mycursor.execute(sql,val)
+            mydb.commit()
+            id = mycursor.lastrowid
+            return id
+        else:
+            mydb.rollback()
+            return False
+    except:
+        mydb.rollback()
+        return False
+    
+
 
 
 def get_book_isbn(isbn):
@@ -115,7 +132,6 @@ def get_user(value, by="id"):
 
 
 def update_book_isbn(isbn, param):
-    mycursor = mydb.cursor()
     sql = "UPDATE books SET ISBN=%s, title=%s, Author=%s, "\
         "description=%s, genre=%s, price=%s, quantity=%s "\
         "WHERE ISBN=%s"
@@ -125,7 +141,6 @@ def update_book_isbn(isbn, param):
     
     mycursor.execute(sql,val)
     mydb.commit()
-    mycursor.arraysize()
 
 
 init_sequence()
