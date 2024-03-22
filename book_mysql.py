@@ -16,7 +16,10 @@ mycursor = mydb.cursor()
 
 
 def init_sequence():
-    mycursor.execute("CREATE DATABASE IF NOT EXISTS ediss")
+    mycursor.execute("SHOW DATABASES")
+    dbs = [d[0] for d in mycursor.fetchall()]
+    if "ediss" not in dbs:
+        mycursor.execute("CREATE DATABASE ediss")
     mycursor.execute("USE ediss")
     mycursor.execute("SHOW TABLES")
     tables = [t[0] for t in mycursor.fetchall()]
