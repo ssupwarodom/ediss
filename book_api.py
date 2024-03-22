@@ -81,6 +81,12 @@ def add_user():
 
     print("starting users transaction")
     id = book_mysql.insert_user(param)
+    counter = 0
+    while not id:
+        id = book_mysql.insert_user(param)
+        if counter == 3:
+            break
+        counter += 1
     if not id:
         return {"message": "This user ID already exists in the system."}, 422
     

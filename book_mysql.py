@@ -1,6 +1,5 @@
 import mysql.connector
 import os
-from time import sleep
 
 MYSQL_SERVER = os.environ["MYSQL_SERVER"]
 MYSQL_USER = os.environ["MYSQL_USER"]
@@ -91,37 +90,30 @@ def insert_book(param):
 
 
 def insert_user(param):
-    i = 0
-    while i <=3:
-        try:
-            mydb.start_transaction()
-            break
-        except Exception as e:
-            print(e)
-            i += 1
-            sleep(1)
-            if i == 3:
-                mydb.rollback()
-                return False
-    
-    print("got transaction for users")
-    check_sql = "SELECT * FROM users WHERE userId=%s"
-    mycursor.execute(check_sql,[param["userId"]])
+    try:
+        mydb.start_transaction()
+        print("got transaction for users")
+        check_sql = "SELECT * FROM users WHERE userId=%s"
+        mycursor.execute(check_sql,[param["userId"]])
 
-    result = mycursor.fetchall()
-    print(result)
-    if not bool(result):
-        sql = "INSERT INTO users (userId, name, phone, address, address2, "\
-                "city, state, zipcode) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-        val = (param["userId"], param["name"], param["phone"], 
-                    param["address"], param["address2"], param["city"],
-                    param["state"], param["zipcode"])
-        mycursor.execute(sql,val)
-        mydb.commit()
-        id = mycursor.lastrowid
-        return id
-    else:
+        result = mycursor.fetchall()
+        print(result)
+        if not bool(result):
+            sql = "INSERT INTO users (userId, name, phone, address, address2, "\
+                    "city, state, zipcode) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (param["userId"], param["name"], param["phone"], 
+                        param["address"], param["address2"], param["city"],
+                        param["state"], param["zipcode"])
+            mycursor.execute(sql,val)
+            mydb.commit()
+            id = mycursor.lastrowid
+            return id
+        else:
+            mydb.rollback()
+            return False
+    except Exception as e:
         mydb.rollback()
+        print(e)
         return False
     
 
