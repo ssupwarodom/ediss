@@ -6,7 +6,7 @@ import os
 
 
 ### CONSTANTS ###
-BACKEND_URL = os.environ["BACKEND_URL"] + ":3000"
+BACKEND_URL = os.environ["BACKEND_URL"] + ":3000/"
 SUB_ALLOWED = ["starlord", "gamora", "drax", "rocket", "groot"]
 ISS_ALLOWED = ["cmu.edu"]
 METHODS = {
