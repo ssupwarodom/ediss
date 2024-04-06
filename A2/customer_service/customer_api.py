@@ -1,5 +1,5 @@
 from flask import Flask, request, make_response, abort
-import A1.book_mysql as book_mysql
+import customer_mysql
 from email_validator import validate_email
 import urllib.parse
 
@@ -35,10 +35,10 @@ def add_user():
         abort(400)
 
     print("starting users transaction")
-    id = book_mysql.insert_user(param)
+    id = customer_mysql.insert_user(param)
     counter = 0
     while not id:
-        id = book_mysql.insert_user(param)
+        id = customer_mysql.insert_user(param)
         if counter == 3:
             break
         counter += 1
@@ -60,13 +60,13 @@ def retrieve_user(id=None):
             id = int(id)
         except:
             abort(400)
-        result = book_mysql.get_user(id)
+        result = customer_mysql.get_user(id)
     else:
         encoded_userId = request.args.get("userId")
         userId = urllib.parse.unquote(encoded_userId)
         if not is_email(userId):
             abort(400)
-        result = book_mysql.get_user(userId, "userId")
+        result = customer_mysql.get_user(userId, "userId")
 
     if not result:
         abort(404)
@@ -94,7 +94,7 @@ def is_email(email):
 
 
 def user_exist(userId):
-    return bool(book_mysql.get_user(userId, "userId"))
+    return bool(customer_mysql.get_user(userId, "userId"))
 
 
 if __name__ == '__main__':
