@@ -440,6 +440,23 @@ Resources:
       ListenerArn: !Ref HTTPListener
       Priority: 1
 
+  # ListenerRule that defines the routing condition for Mobile app clients.
+  MobileClientListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref MobileBFFTargetGroup
+      Conditions:
+        - Field: http-header
+          HttpHeaderConfig:
+            HttpHeaderName: X-Client-Type
+            Values:
+              - iOS
+              - Android
+      ListenerArn: !Ref HTTPListener
+      Priority: 2
+
   # Listener for port 80
   # DefaultActions are executed if no listener rule matches the incoming request.
   HTTPListener:

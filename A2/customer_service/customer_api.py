@@ -22,6 +22,7 @@ app = Flask(__name__)
 
 
 @app.route("/status")
+@app.route("/")
 def health_check():
     return "OK"
 

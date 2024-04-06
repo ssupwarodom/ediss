@@ -1,5 +1,5 @@
 from flask import Flask, request, make_response, abort
-import A1.book_mysql as book_mysql
+import book_mysql
 
 ### CONSTANTS ###
 BOOK_REQUIRED_PARAM = ["ISBN", "title", "Author", "description", 
@@ -10,6 +10,7 @@ app = Flask(__name__)
 
 ### MAIN LOGIC ###
 @app.route("/status")
+@app.route("/")
 def health_check():
     return "OK"
 

@@ -2,10 +2,11 @@ from flask import Flask, request, abort
 import jwt
 from datetime import datetime
 import requests
+import os
 
 
 ### CONSTANTS ###
-BACKEND_URL = "url.com/"
+BACKEND_URL = os.environ["BACKEND_URL"] + ":3000"
 SUB_ALLOWED = ["starlord", "gamora", "drax", "rocket", "groot"]
 ISS_ALLOWED = ["cmu.edu"]
 METHODS = {
@@ -24,6 +25,7 @@ app = Flask(__name__)
 
 ### MAIN LOGIC ###
 @app.route("/status")
+@app.route("/")
 def health_check():
     return "OK"
 
