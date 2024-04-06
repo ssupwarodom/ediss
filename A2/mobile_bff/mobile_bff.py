@@ -44,7 +44,11 @@ def proxy(path):
         json=request.get_json(),
         headers=request.headers
     )
-    rsp = response.json()
+    
+    try:
+        rsp = response.json()
+    except:
+        return {}, response.status_code
 
 
     if request.method == "GET" and path.startswith("books"):
